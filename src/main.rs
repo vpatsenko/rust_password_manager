@@ -9,14 +9,15 @@ fn main() {
     //TODO: configuration
     let repo = Storage::Repo::new_storage(String::from("repo.txt"));
 
-    let name = String::from("name");
-    let login = String::from("login");
-    let password = String::from("password");
+    // let name = String::from("name");
+    // let login = String::from("login");
+    // let password = String::from("password");
 
-    let res = repo.insert_entry(name, login, password);
+    // let res = repo.insert_entry(name, login, password);
 
+    let res = repo.read_by_entry_name("name6".to_string());
     match res {
-        Ok(res) => println!("{:?}", res),
-        Err(res) => println!("{:?}", res),
+        Ok(r) => println!("{:?}", r),
+        Err(e) => println!("{:?}", e),
     }
 }
