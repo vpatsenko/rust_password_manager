@@ -35,7 +35,7 @@
 // }
 
 pub mod Storage {
-    use std::{fs, io::BufRead};
+    use std::{fs, io::Write};
 
     #[derive(Debug)]
     pub struct Entity {
@@ -59,10 +59,12 @@ pub mod Storage {
             login: String,
             password: String,
         ) -> std::io::Result<()> {
-            fs::write(
-                &self.file_name,
-                format!("{}\t{}\t{}\n", name, login, password),
-            )?;
+            let mut f = fs::OpenOptions::new()
+                .write(true)
+                .append(true)
+                .open(&self.file_name)?;
+
+            f.write_all(format!("{}\t{}\t{}\n", name, login, password).as_bytes())?;
             Ok(())
         }
 
