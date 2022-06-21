@@ -40,30 +40,33 @@
 
 // use std::iter::repeat;
 
+use std::fmt::Debug;
+
 // use rand;
-// use std::env;
+use md5;
 
 fn main() {
-    // let mut gen = rand::thread_rng().gen_range(0..10);
-    // rand::rngs::OsRng::
-    // let mut key: Vec<u8> = repeat(0u8).take(16).collect();
-    // gen.fill_bytes(&mut key[..]);
-    // let mut nonce: Vec<u8> = repeat(0u8).take(16).collect();
-    // gen.fill_bytes(&mut nonce[..]);
-    // println!("Key: {}", key.to_base64(STANDARD));
-    // println!("Nonce: {}", nonce.to_base64(STANDARD));
-    // let mut cipher = aes::ctr(KeySize::KeySize128, &key, &nonce);
-    // let secret = "I like Nickelback";
-    // let mut output: Vec<u8> = repeat(0u8).take(secret.len()).collect();
-    // cipher.process(secret.as_bytes(), &mut output[..]);
-    // println!("Ciphertext: {}", output.to_base64(STANDARD));
+    let args: Vec<String> = std::env::args().collect();
+    println!("{:?}", args);
+
+    if args.len() != 2 {
+        println!("No master password provided");
+        return;
+    }
+
+    let password: &String = &args[1];
+    let hashed_password = md5::compute(password);
+    println!("hashed password: {:?}", hashed_password.0);
+
+    //    let str_hashed_pasword: String = hashed_password.
 
     use aes::cipher::{
         generic_array::GenericArray, BlockCipher, BlockDecrypt, BlockEncrypt, KeyInit,
     };
     use aes::Aes128;
 
-    let key = GenericArray::from([0u8; 16]);
+    let key = GenericArray::from(hashed_password.0);
+    // let key = GenericArray::from([0u8; 16]);
     println!("key: {:?}", key);
     let mut block = GenericArray::from([42u8; 16]);
 
