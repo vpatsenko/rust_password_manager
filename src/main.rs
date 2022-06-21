@@ -41,9 +41,16 @@
 // use std::iter::repeat;
 
 use std::fmt::Debug;
-
+// mod storage;
+// pub crate::hosting;
 // use rand;
 use md5;
+
+mod manager;
+mod storage;
+
+use manager::manager::Manager;
+use storage::storage::Repository;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -54,51 +61,56 @@ fn main() {
         return;
     }
 
-    let password: &String = &args[1];
-    let hashed_password = md5::compute(password);
-    println!("hashed password: {:?}", hashed_password.0);
+    let r = Repository::Repo::new_storage("repo.txt".to_string());
+    let m = Manager::Manager::new_manager(&r);
 
-    //    let str_hashed_pasword: String = hashed_password.
+    println!("{:?}", m);
 
-    use aes::cipher::{
-        generic_array::GenericArray, BlockCipher, BlockDecrypt, BlockEncrypt, KeyInit,
-    };
-    use aes::Aes128;
+    // let password: &String = &args[1];
+    // let hashed_password = md5::compute(password);
+    // println!("hashed password: {:?}", hashed_password.0);
 
-    let key = GenericArray::from(hashed_password.0);
-    // let key = GenericArray::from([0u8; 16]);
-    println!("key: {:?}", key);
-    let mut block = GenericArray::from([42u8; 16]);
+    // //    let str_hashed_pasword: String = hashed_password.
 
-    // Initialize cipher
-    let cipher = Aes128::new(&key);
+    // use aes::cipher::{
+    //     generic_array::GenericArray, BlockCipher, BlockDecrypt, BlockEncrypt, KeyInit,
+    // };
+    // use aes::Aes128;
 
-    let block_copy = block.clone();
+    // let key = GenericArray::from(hashed_password.0);
+    // // let key = GenericArray::from([0u8; 16]);
+    // println!("key: {:?}", key);
+    // let mut block = GenericArray::from([42u8; 16]);
 
-    // Encrypt block in-place
-    cipher.encrypt_block(&mut block);
-    println!("encrypted block: {:?}", block);
+    // // Initialize cipher
+    // let cipher = Aes128::new(&key);
 
-    // And decrypt it back
-    cipher.decrypt_block(&mut block);
-    println!("decrypted block: {:?}", block);
-    assert_eq!(block, block_copy);
+    // let block_copy = block.clone();
 
-    // implementation supports parrallel block processing
-    // number of blocks processed in parallel depends in general
-    // on hardware capabilities
-    let mut blocks = [block; 100];
-    cipher.encrypt_blocks(&mut blocks);
+    // // Encrypt block in-place
+    // cipher.encrypt_block(&mut block);
+    // println!("encrypted block: {:?}", block);
 
-    for block in blocks.iter_mut() {
-        cipher.decrypt_block(block);
-        assert_eq!(block, &block_copy);
-    }
+    // // And decrypt it back
+    // cipher.decrypt_block(&mut block);
+    // println!("decrypted block: {:?}", block);
+    // assert_eq!(block, block_copy);
 
-    cipher.decrypt_blocks(&mut blocks);
+    // // implementation supports parrallel block processing
+    // // number of blocks processed in parallel depends in general
+    // // on hardware capabilities
+    // let mut blocks = [block; 100];
+    // cipher.encrypt_blocks(&mut blocks);
 
-    for block in blocks.iter_mut() {
-        cipher.encrypt_block(block);
-        assert_eq!(block, &block_copy);
-    }
+    // for block in blocks.iter_mut() {
+    //     cipher.decrypt_block(block);
+    //     assert_eq!(block, &block_copy);
+    // }
+
+    // cipher.decrypt_blocks(&mut blocks);
+
+    // for block in blocks.iter_mut() {
+    //     cipher.encrypt_block(block);
+    //     assert_eq!(block, &block_copy);
+    // }
 }

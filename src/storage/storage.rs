@@ -34,7 +34,7 @@
 // 	}
 // }
 
-pub mod Storage {
+pub mod Repository {
     use std::{fs, io::Write};
 
     #[derive(Debug)]
@@ -44,6 +44,7 @@ pub mod Storage {
         pub password: String,
     }
 
+    #[derive(Debug)]
     pub struct Repo {
         file_name: String,
     }
