@@ -1,50 +1,5 @@
-// mod config;
-// mod storage;
-
-// use storage::storage::Storage;
-
-// fn main() {
-//     let args: Vec<String> = std::env::args().collect();
-
-//     //TODO: configuration
-//     let repo = Storage::Repo::new_storage(String::from("repo.txt"));
-
-//     let name = String::from("name10");
-//     let login = String::from("login10");
-//     let password = String::from("password10");
-
-//     let res = repo.insert_entry(name, login, password);
-
-//     // let res = repo.read_by_entry_name("name6".to_string());
-//     // match res {
-//     //     Ok(r) => println!("{:?}", r),
-//     //     Err(e) => println!("{:?}", e),
-//     // }
-// }
-
-// use crypto::aead::{AeadDecryptor, AeadEncryptor};
-// use crypto::aes_gcm::AesGcm;
-// use rand::Rng;
-// use rustc_serialize::hex::FromHex;
-
-// use core::str;
-// use crypto::aes::{self, KeySize};
-// use crypto::digest::Digest;
-// use crypto::hmac::Hmac;
-// use crypto::mac::Mac;
-// use crypto::sha2::Sha256;
-// use crypto::symmetriccipher::SynchronousStreamCipher;
-
-// use rustc_serialize::base64::{ToBase64, STANDARD};
-// use rustc_serialize::hex::ToHex;
-
-// use std::iter::repeat;
-
-use std::fmt::Debug;
-// mod storage;
-// pub crate::hosting;
-// use rand;
 use md5;
+use std::{borrow::Borrow, fmt::Debug, vec};
 
 mod manager;
 mod storage;
@@ -54,37 +9,50 @@ use storage::storage::Repository;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    println!("{:?}", args);
+    // println!("{:?}", args);
 
-    if args.len() != 2 {
-        println!("No master password provided");
-        return;
+    // if args.len() != 2 {
+    //     println!("No master password provided");
+    //     return;
+    // }
+
+    // let r = Repository::Repo::new_storage("repo.txt".to_string());
+    // let m = Manager::Manager::new_manager(&r);
+
+    // println!("{:?}", m);
+
+    let password: &String = &args[1];
+
+    // let name = "name".to_string();
+    // let login = "login".to_string();
+    let password = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string();
+    // let password = "some very very long password".to_string();
+
+    let master_password = "master_password".to_string();
+
+    use aes::cipher::{
+        generic_array::GenericArray, BlockCipher, BlockDecrypt, BlockEncrypt, KeyInit,
+    };
+    use aes::Aes128;
+
+    // let string_to_encrypt = format!("{}\t{}\t{}\n", name, login, password)
+    let string_to_encrypt = format!("{}", password).as_bytes().to_owned();
+    println!("byted string to encrypt: {:?}", string_to_encrypt);
+    println!("first 16 bytes to encrypt: {:?}", &string_to_encrypt[0..15]);
+    println!("second 16 bytes to encrypt: {:?}", &string_to_encrypt[15..]);
+
+    let blocks = split_bytes_into_blocks_with_padding(string_to_encrypt);
+
+    for block in blocks {
+        println!("blocks : {:?}", block);
     }
 
-    let r = Repository::Repo::new_storage("repo.txt".to_string());
-    let m = Manager::Manager::new_manager(&r);
-
-    println!("{:?}", m);
-
-    // let password: &String = &args[1];
-    // let hashed_password = md5::compute(password);
-    // println!("hashed password: {:?}", hashed_password.0);
-
-    // //    let str_hashed_pasword: String = hashed_password.
-
-    // use aes::cipher::{
-    //     generic_array::GenericArray, BlockCipher, BlockDecrypt, BlockEncrypt, KeyInit,
-    // };
-    // use aes::Aes128;
+    // let hashed_password = md5::compute(master_password);
 
     // let key = GenericArray::from(hashed_password.0);
-    // // let key = GenericArray::from([0u8; 16]);
-    // println!("key: {:?}", key);
     // let mut block = GenericArray::from([42u8; 16]);
 
-    // // Initialize cipher
     // let cipher = Aes128::new(&key);
-
     // let block_copy = block.clone();
 
     // // Encrypt block in-place
@@ -113,4 +81,28 @@ fn main() {
     //     cipher.encrypt_block(block);
     //     assert_eq!(block, &block_copy);
     // }
+}
+
+fn split_bytes_into_blocks_with_padding(bytes: Vec<u8>) -> Vec<Vec<u8>> {
+    let iter = (bytes.len() + (16 - 1)) / 16;
+
+    let mut byte_arrays_container: Vec<Vec<u8>> = vec![];
+
+    for i in 1..=iter {
+        if i == iter {
+            let mut b: Vec<u8> = vec![0u8; 15];
+
+            let mut k = 0;
+            for n in &bytes[(15 * (i - 1))..] {
+                b[k] = n.to_owned();
+                k += 1;
+            }
+
+            byte_arrays_container.push(b);
+            break;
+        }
+        byte_arrays_container.push(bytes[(15 * (i - 1))..(i * 15)].to_owned());
+    }
+
+    return byte_arrays_container;
 }
