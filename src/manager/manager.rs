@@ -1,5 +1,6 @@
 pub mod Manager {
 
+    use std::f32::consts::E;
     use std::string;
 
     use crate::storage::storage::Repository;
@@ -46,15 +47,15 @@ pub mod Manager {
             let string_to_encrypt = Vec::from(format!(
                 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             ));
-            // let string_to_encrypt = Vec::from(format!("{} {} {}\n", name, login, password));
 
             let blocks = self::Manager::split_bytes_into_blocks_with_padding(string_to_encrypt);
 
             println!("Trying to encrypt blocks\n");
 
-            self::Manager::encypt_blocks(blocks, "pass".to_string());
+            let encrypted = self::Manager::encypt_blocks(blocks, master_password);
 
-            Ok(vec![0u8; 10])
+            println!("\n\n\nencrypted result: {:?}", encrypted);
+            Ok(encrypted)
         }
 
         fn split_bytes_into_blocks_with_padding(bytes: Vec<u8>) -> Vec<Vec<u8>> {
@@ -94,26 +95,30 @@ pub mod Manager {
 
             let cipher = Aes128::new(&key);
 
+            let mut res = Vec::<u8>::new();
             for block in blocks {
                 println!("block size: {}", block.len());
                 // let mut block_generic = GenericArray::from_slice(block.as_slice()).to_owned();
                 let mut block_generic = GenericArray::from_slice(block.as_slice()).to_owned();
                 // let mut block_generic = GenericArray::from([0u8; 16]);
 
-                println!("Encrypting the next block\n");
+                // println!("Encrypting the next block\n");
 
-                println!("block before encryption: {:?}", block_generic);
+                // println!("block before encryption: {:?}", block_generic);
 
                 cipher.encrypt_block(&mut block_generic);
-                println!("encrypted block: {:?}", block_generic);
+                // println!("encrypted block: {:?}", block_generic);
+
+                // res.push(block_generic.as_slice().clone()[..]);
+                res.extend_from_slice(&block_generic.as_slice());
 
                 cipher.decrypt_block(&mut block_generic);
-                println!("decrypted block: {:?}", block_generic);
+                // println!("decrypted block: {:?}", block_generic);
 
-                println!();
+                // println!();
             }
 
-            vec![]
+            res
         }
     }
 }

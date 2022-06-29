@@ -29,7 +29,7 @@ fn main() {
     let password = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string();
     // let password = "some very very long password".to_string();
 
-    let master_password = "master_password".to_string();
+    let master_password = "master_passwosss111111rd1111  ".to_string();
 
     use aes::cipher::{
         generic_array::GenericArray, BlockCipher, BlockDecrypt, BlockEncrypt, KeyInit,
@@ -50,9 +50,9 @@ fn main() {
 
     m.encrypt(
         master_password,
-        "aaaaaa".to_string(),
-        "aaaaaa".to_string(),
-        "aaaaaaaaaaa".to_string(),
+        "yandex.ru".to_string(),
+        "some@yandex.ru".to_string(),
+        "password".to_string(),
     );
 
     // let hashed_password = md5::compute(master_password);
