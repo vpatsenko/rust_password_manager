@@ -14,10 +14,11 @@ fn main() {
     // if args.len() != 2 {
     //     println!("No master password provided");
     //     return;
+
     // }
 
-    // let r = Repository::Repo::new_storage("repo.txt".to_string());
-    // let m = Manager::Manager::new_manager(&r);
+    let r = Repository::Repo::new_storage("repo.txt".to_string());
+    let m = Manager::Manager::new_manager(&r);
 
     // println!("{:?}", m);
 
@@ -41,11 +42,18 @@ fn main() {
     println!("first 16 bytes to encrypt: {:?}", &string_to_encrypt[0..15]);
     println!("second 16 bytes to encrypt: {:?}", &string_to_encrypt[15..]);
 
-    let blocks = split_bytes_into_blocks_with_padding(string_to_encrypt);
+    // let blocks = split_bytes_into_blocks_with_padding(string_to_encrypt);
 
-    for block in blocks {
-        println!("blocks : {:?}", block);
-    }
+    // for block in blocks {
+    //     println!("blocks : {:?}", block);
+    // }
+
+    m.encrypt(
+        master_password,
+        "aaaaaa".to_string(),
+        "aaaaaa".to_string(),
+        "aaaaaaaaaaa".to_string(),
+    );
 
     // let hashed_password = md5::compute(master_password);
 
@@ -81,28 +89,4 @@ fn main() {
     //     cipher.encrypt_block(block);
     //     assert_eq!(block, &block_copy);
     // }
-}
-
-fn split_bytes_into_blocks_with_padding(bytes: Vec<u8>) -> Vec<Vec<u8>> {
-    let iter = (bytes.len() + (16 - 1)) / 16;
-
-    let mut byte_arrays_container: Vec<Vec<u8>> = vec![];
-
-    for i in 1..=iter {
-        if i == iter {
-            let mut b: Vec<u8> = vec![0u8; 15];
-
-            let mut k = 0;
-            for n in &bytes[(15 * (i - 1))..] {
-                b[k] = n.to_owned();
-                k += 1;
-            }
-
-            byte_arrays_container.push(b);
-            break;
-        }
-        byte_arrays_container.push(bytes[(15 * (i - 1))..(i * 15)].to_owned());
-    }
-
-    return byte_arrays_container;
 }
