@@ -28,9 +28,9 @@ pub mod Manager {
             login: String,
             password: String,
         ) -> Result<(), String> {
-            // TODO: ecnrypt
+            let encrypted_entry = self.encrypt(master_password, name.clone(), login, password);
 
-            match &self.repo.insert_entry(name, login, password) {
+            match &self.repo.insert_entry(name, encrypted_entry) {
                 Ok(r) => return Ok(r.to_owned()),
                 Err(e) => return Err(e.to_string()),
             };
@@ -42,83 +42,54 @@ pub mod Manager {
             name: String,
             login: String,
             password: String,
-        ) -> Result<Vec<u8>, String> {
-            // TODO: uncomment line after this one
-            let string_to_encrypt = Vec::from(format!(
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            ));
-
-            let blocks = self::Manager::split_bytes_into_blocks_with_padding(string_to_encrypt);
-
-            println!("Trying to encrypt blocks\n");
-
-            let encrypted = self::Manager::encypt_blocks(blocks, master_password);
-
-            println!("\n\n\nencrypted result: {:?}", encrypted);
-            Ok(encrypted)
+        ) -> Vec<u8> {
+            let string_to_encrypt = Vec::from(format!("{}\t{}\t{}", name, login, password));
+            let blocks = self::split_bytes_into_blocks_with_padding(string_to_encrypt);
+            let encrypted = self::encypt_blocks(blocks, master_password);
+            encrypted
         }
+    }
 
-        fn split_bytes_into_blocks_with_padding(bytes: Vec<u8>) -> Vec<Vec<u8>> {
-            let iter = (bytes.len() + (16 - 1)) / 16;
+    fn split_bytes_into_blocks_with_padding(bytes: Vec<u8>) -> Vec<Vec<u8>> {
+        let iter = (bytes.len() + (16 - 1)) / 16;
 
-            let mut byte_arrays_container: Vec<Vec<u8>> = vec![];
+        let mut byte_arrays_container: Vec<Vec<u8>> = vec![];
 
-            for i in 1..=iter {
-                if i == iter {
-                    let mut b: Vec<u8> = vec![0u8; 16];
+        for i in 1..=iter {
+            if i == iter {
+                let mut b: Vec<u8> = vec![0u8; 16];
 
-                    let mut k = 0;
-                    for n in &bytes[(16 * (i - 1))..] {
-                        b[k] = n.to_owned();
-                        k += 1;
-                    }
-
-                    byte_arrays_container.push(b);
-                    break;
+                let mut k = 0;
+                for n in &bytes[(16 * (i - 1))..] {
+                    b[k] = n.to_owned();
+                    k += 1;
                 }
-                byte_arrays_container.push(bytes[(16 * (i - 1))..(i * 16)].to_owned());
+
+                byte_arrays_container.push(b);
+                break;
             }
-
-            println!("iter : {}", iter);
-            println!("len: {}", byte_arrays_container[0].len());
-
-            return byte_arrays_container;
+            byte_arrays_container.push(bytes[(16 * (i - 1))..(i * 16)].to_owned());
         }
 
-        fn to_bytes(v: Vec<u8>) -> [u8; 16] {
-            v.try_into().unwrap()
+        println!("iter : {}", iter);
+        println!("len: {}", byte_arrays_container[0].len());
+
+        return byte_arrays_container;
+    }
+
+    fn encypt_blocks(blocks: Vec<Vec<u8>>, master_password: String) -> Vec<u8> {
+        let hashed_password = md5::compute(master_password);
+        let key = GenericArray::from(hashed_password.0);
+
+        let cipher = Aes128::new(&key);
+
+        let mut res = Vec::<u8>::new();
+        for block in blocks {
+            let mut block_generic = GenericArray::from_slice(block.as_slice()).to_owned();
+            cipher.encrypt_block(&mut block_generic);
+            res.extend_from_slice(&block_generic.as_slice());
         }
 
-        fn encypt_blocks(blocks: Vec<Vec<u8>>, master_password: String) -> Vec<u8> {
-            let hashed_password = md5::compute(master_password);
-            let key = GenericArray::from(hashed_password.0);
-
-            let cipher = Aes128::new(&key);
-
-            let mut res = Vec::<u8>::new();
-            for block in blocks {
-                println!("block size: {}", block.len());
-                // let mut block_generic = GenericArray::from_slice(block.as_slice()).to_owned();
-                let mut block_generic = GenericArray::from_slice(block.as_slice()).to_owned();
-                // let mut block_generic = GenericArray::from([0u8; 16]);
-
-                // println!("Encrypting the next block\n");
-
-                // println!("block before encryption: {:?}", block_generic);
-
-                cipher.encrypt_block(&mut block_generic);
-                // println!("encrypted block: {:?}", block_generic);
-
-                // res.push(block_generic.as_slice().clone()[..]);
-                res.extend_from_slice(&block_generic.as_slice());
-
-                cipher.decrypt_block(&mut block_generic);
-                // println!("decrypted block: {:?}", block_generic);
-
-                // println!();
-            }
-
-            res
-        }
+        res
     }
 }

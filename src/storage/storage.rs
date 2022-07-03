@@ -54,18 +54,22 @@ pub mod Repository {
             Repo { file_name }
         }
 
-        pub fn insert_entry(
-            &self,
-            name: String,
-            login: String,
-            password: String,
-        ) -> std::io::Result<()> {
+        pub fn insert_entry(&self, entry_name: String, encrypted: Vec<u8>) -> std::io::Result<()> {
             let mut f = fs::OpenOptions::new()
                 .write(true)
                 .append(true)
                 .open(&self.file_name)?;
 
-            f.write_all(format!("{}\t{}\t{}\n", name, login, password).as_bytes())?;
+            let buf = Vec::<u8>::new();
+
+            let mut b = *format!("{}\t", entry_name).as_bytes();
+
+            buf.extend_from_slice(b);
+
+            f.write_all(
+                // format!("{}\t{}\t{}\n", entry_name, encrypted.as_ref().to_string()).as_bytes(),
+                &encrypted,
+            )?;
             Ok(())
         }
 
