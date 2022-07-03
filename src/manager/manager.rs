@@ -36,7 +36,7 @@ pub mod Manager {
             };
         }
 
-        pub fn encrypt(
+        fn encrypt(
             &self,
             master_password: String,
             name: String,
@@ -80,7 +80,6 @@ pub mod Manager {
     fn encypt_blocks(blocks: Vec<Vec<u8>>, master_password: String) -> Vec<u8> {
         let hashed_password = md5::compute(master_password);
         let key = GenericArray::from(hashed_password.0);
-
         let cipher = Aes128::new(&key);
 
         let mut res = Vec::<u8>::new();

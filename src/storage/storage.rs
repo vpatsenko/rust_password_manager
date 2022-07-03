@@ -60,16 +60,14 @@ pub mod Repository {
                 .append(true)
                 .open(&self.file_name)?;
 
-            let buf = Vec::<u8>::new();
+            let mut buf = Vec::<u8>::new();
+            let b = format!("{}\t", entry_name.as_str());
 
-            let mut b = *format!("{}\t", entry_name).as_bytes();
+            buf.extend_from_slice(b.as_bytes());
+            buf.extend_from_slice(&encrypted);
+            buf.extend_from_slice("\n".as_bytes());
 
-            buf.extend_from_slice(b);
-
-            f.write_all(
-                // format!("{}\t{}\t{}\n", entry_name, encrypted.as_ref().to_string()).as_bytes(),
-                &encrypted,
-            )?;
+            f.write_all(&buf)?;
             Ok(())
         }
 

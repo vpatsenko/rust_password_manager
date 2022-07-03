@@ -1,11 +1,4 @@
-name	login	password
-name1	login	password
-name2	login	password
-name3	login	password
-name4	login	password
-name5	login	password
-name6	login	password
-name10	login10	password10
-name10	login10	password10
-name10	login10	password10
-name10	login10	password10
+yandex.ru	Ó½tTênßBùB4ëR8¨Ùÿ=n¸4Ò™ÒM|jüÀ—]3)ş$Nxf
+yandex.ru	Ó½tTênßBùB4ëR8¨Ùÿ=n¸4Ò™ÒM|jüÀ—]3)ş$Nxf
+yandex.ru	Ó½tTênßBùB4ëR8œQø&œiuÏêug)XYk‡¬ó7LÆÀ-èÁc*
+yaaandex.ru	aÌ)RÆAæ’‚±ÁK«9osUêë)(E1Ç~o›&ÙjÏüO¨æ

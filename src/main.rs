@@ -48,11 +48,11 @@ fn main() {
     //     println!("blocks : {:?}", block);
     // }
 
-    m.encrypt(
+    m.store_entry(
         master_password,
-        "yandex.ru".to_string(),
-        "some@yandex.ru".to_string(),
-        "password".to_string(),
+        "yaaandex.ru".to_string(),
+        "some2@yandex.ru".to_string(),
+        "another password".to_string(),
     );
 
     // let hashed_password = md5::compute(master_password);
